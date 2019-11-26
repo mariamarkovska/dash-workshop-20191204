@@ -1,18 +1,17 @@
 # Dash intro PyLadies 2019-12-04
 
 ## Install dash
-To install the latest version of dash with pip:
-(TA MED INSTALLATION AV PIP? Kolla hur de brukar göra i installationsguider för dash)
+To install the packages needed for the example code use:
 ```
-pip3 install dash
+pip install -r requirements.txt
 ```
+For installation of Dash only, check out Dash [installation guide](https://dash.plot.ly/installation)
 
 ## Example code
-The example code from the presentation is found in [NAME.py](link_to_repo_file). 
+The app from the presentation: [music_app.py](https://github.com/mariamarkovska/dash-workshop-20191204/blob/master/music_app.py)
 
 ## Example data
-Länk/instruktion om hur man kan hämta exempeldata
-T.ex. 
+The Spotify example data used in the app can be downloaded [here](https://www.kaggle.com/edumucelli/spotifys-worldwide-daily-song-ranking)
 
-## Inspo
-Links to cool dash apps with source code available can be found here: 
+## Inspiration
+Some links to Dash apps with source code available:
