@@ -68,7 +68,7 @@ app.layout = html.Div(children=[
     [Input('input-day-picker','date') ]
 )
 
-def filter_on_date(input_date):
+def update_table(input_date):
     # Filter dataframe on chosen date
     filtered_df = df[df.Date == input_date]
 
