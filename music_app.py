@@ -19,17 +19,19 @@ df = pd.read_csv("spotifys-worldwide-daily-song-ranking/data.csv")
 # Filter on country-code 'se' for Sweden
 df = df[df.Region == 'se']
 
-# Define the dash app
+# Define the dash app & stylesheet (see CSS styleguide link on git)
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
-# App layout
+# App layout (the looks)
+
 app.layout = html.Div(children=[
 
+	# Headers (1 and 4 means different sizes)
     html.H1(children='Spotify Swedish Top 10 year 2017'),
-
     html.H4('Choose a day'),
 
+    # A date-picker component to use as a date input
     dcc.DatePickerSingle(
         id='input-day-picker',
         min_date_allowed=datetime(2017, 1, 1),
@@ -48,7 +50,7 @@ app.layout = html.Div(children=[
     html.Div([
         html.Div([
             dcc.Graph(id='bar-graph')
-        ], className="six columns"),
+        ], className="six columns"), # six columns -> divide 50/50
 
         html.Div([
             dcc.Graph(id='pie-graph')
@@ -58,7 +60,7 @@ app.layout = html.Div(children=[
 ])
 
 
-# App functionality (callbacks)
+# App callbacks (the functionality)
 
 # Update displayed table when a day is chosen
 @app.callback(
@@ -79,7 +81,7 @@ def filter_on_date(input_date):
     # Return result to the displaying table
     return data
 
-
+# Update pie-graph when a day is chosen
 @app.callback(
     Output('pie-graph','figure'),
     [Input('input-day-picker','date') ]
@@ -95,7 +97,7 @@ def update_pie_graph(input_date):
     # Get top 10 songs
     songs = top_10_df["Track Name"].to_numpy()
 
-    # Loop through all data and calculate total steams for top 10 songs
+    # Go through all data and calculate total steams for top 10 songs
     total_streams_list = []
     for song in songs:
         song_df = df[df["Track Name"] == song]
@@ -117,7 +119,7 @@ def update_pie_graph(input_date):
     }
 
 
-# Update graph when a day is chosen
+# Update bar-graph when a day is chosen
 @app.callback(
     Output('bar-graph','figure'),
     [Input('input-day-picker','date') ]
@@ -133,7 +135,7 @@ def update_line_graph(input_date):
     # Get top 10 artists
     artists = top_10_df["Artist"].to_numpy()
 
-    # Loop through all data and calculate total steams for top 10 artists
+    # Go through all data and calculate total steams for top 10 artists
     total_streams_list = []
     for artist in artists:
         artist_df = df[df["Artist"] == artist]
