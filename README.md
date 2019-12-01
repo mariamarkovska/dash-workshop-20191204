@@ -16,7 +16,7 @@ The Spotify example data used in the app can be downloaded [here](https://www.ka
 ## Useful links
 Dash official user guide: https://dash.plot.ly/
 
-A CSS styleguide for Dash:https://codepen.io/chriddyp/pen/bWLwgP
+A CSS styleguide for Dash: https://codepen.io/chriddyp/pen/bWLwgP
 
 A collection of example apps & tutorials:
 https://github.com/ucg8j/awesome-dash
