@@ -20,14 +20,15 @@ df = pd.read_csv("spotifys-worldwide-daily-song-ranking/data.csv")
 df = df[df.Region == 'se']
 
 # Define the dash app
-app = dash.Dash()
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 # App layout
 app.layout = html.Div(children=[
 
-    html.H1(children='Spotify Swedish Top 10 (2017-2018)'),
+    html.H1(children='Spotify Swedish Top 10 year 2017'),
 
-    html.Label('Choose a day:'),
+    html.H4('Choose a day'),
 
     dcc.DatePickerSingle(
         id='input-day-picker',
@@ -37,14 +38,23 @@ app.layout = html.Div(children=[
         date=datetime.strftime(datetime(2017, 1, 1), '%Y-%m-%d')
     ),
 
+    # Table showing all columns in dataframe
     dash_table.DataTable(
         id = 'top-10-table',
         columns = [{"name": i, "id": i,} for i in (df.columns)]
     ),
 
-    dcc.Graph(
-        id = 'graph-streams-over-time'
-    ),
+    # A new row Div to put the two graphs next to each other
+    html.Div([
+        html.Div([
+            dcc.Graph(id='bar-graph')
+        ], className="six columns"),
+
+        html.Div([
+            dcc.Graph(id='pie-graph')
+        ], className="six columns"),
+    ], className="row"),
+
 ])
 
 
@@ -70,36 +80,74 @@ def filter_on_date(input_date):
     return data
 
 
-
-# Update graph when a day is chosen
 @app.callback(
-    Output('graph-streams-over-time','figure'),
+    Output('pie-graph','figure'),
     [Input('input-day-picker','date') ]
 )
 
-def update_graph(input_date):
+def update_pie_graph(input_date):
     # Filter dataframe on chosen date
     filtered_df = df[df.Date == input_date]
 
-    # Choose top 1 for graph
-    top_1_df = filtered_df[filtered_df.Position <= 1]
+    # Choose top 10 for display
+    top_10_df = filtered_df[filtered_df.Position <= 10]
 
-    # Get URL, Track Name and Artist from top 1
-    top_1_URL = top_1_df.URL.to_numpy()[0]
-    top_1_track_name = top_1_df["Track Name"].to_numpy()[0]
-    top_1_artist = top_1_df["Artist"].to_numpy()[0]
+    # Get top 10 songs
+    songs = top_10_df["Track Name"].to_numpy()
 
-    # Find the top 1 URL in the global dataframe to get streams over time
-    all_time_streams = df[df.URL == top_1_URL]    
-
-    # Return results in format defined for a dcc.Graph figure
+    # Loop through all data and calculate total steams for top 10 songs
+    total_streams_list = []
+    for song in songs:
+        song_df = df[df["Track Name"] == song]
+        total_streams = song_df["Streams"].sum()
+        total_streams_list.append(total_streams)
+    
+    # Return a dcc.Graph figure containing a bar-chart
     return {
         'data': [
-            {'x': all_time_streams.Date, 'y': all_time_streams.Streams, 'type': 'line'}
+            go.Pie(values=total_streams_list, labels=songs)
         ],
         'layout': {
             'title' : go.layout.Title(
-                text=f"Streams over time: {top_1_track_name} - {top_1_artist}",
+                text=f"Top 10 Songs: total streams 2017",
+                font=dict(size=24, color="#000000")
+            ),
+            'showlegend' : False
+        }
+    }
+
+
+# Update graph when a day is chosen
+@app.callback(
+    Output('bar-graph','figure'),
+    [Input('input-day-picker','date') ]
+)
+
+def update_line_graph(input_date):
+    # Filter dataframe on chosen date
+    filtered_df = df[df.Date == input_date]
+
+    # Choose top 10 for display
+    top_10_df = filtered_df[filtered_df.Position <= 10]
+
+    # Get top 10 artists
+    artists = top_10_df["Artist"].to_numpy()
+
+    # Loop through all data and calculate total steams for top 10 artists
+    total_streams_list = []
+    for artist in artists:
+        artist_df = df[df["Artist"] == artist]
+        total_streams = artist_df["Streams"].sum()
+        total_streams_list.append(total_streams)
+    
+    # Return a dcc.Graph figure containing a bar-chart
+    return {
+        'data': [
+            go.Bar(x=artists, y=total_streams_list)
+        ],
+        'layout': {
+            'title' : go.layout.Title(
+                text=f"Top 10 Artists: total streams 2017",
                 font=dict(size=24, color="#000000")
             )
         }
